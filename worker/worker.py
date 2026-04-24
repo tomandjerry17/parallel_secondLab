@@ -1,10 +1,13 @@
 import os
 import json
 import time
+import threading
 import pika
+from flask import Flask, jsonify
 from supabase import create_client, Client
 
-# Set these in Render environment variables
+app = Flask(__name__)
+
 RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost/")
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
@@ -19,27 +22,24 @@ def process_vote(ch, method, properties, body):
         vote = json.loads(body.decode("utf-8"))
         print(f"[Worker] Received vote: {vote['user_id']} | Poll: {vote['poll_id']}")
 
-        # Idempotency: unique doc ID per user+poll (prevents duplicate entries)
         doc_id = f"{vote['user_id']}_{vote['poll_id']}"
         vote["doc_id"] = doc_id
         vote["processed_at"] = time.time()
 
-        # Upsert into Supabase (insert or update if same doc_id)
         supabase.table("votes").upsert(vote, on_conflict="doc_id").execute()
 
         processed_count += 1
-        print(f"[Worker] Stored vote {doc_id} | Total processed: {processed_count}")
+        print(f"[Worker] Stored {doc_id} | Total processed: {processed_count}")
 
-        # Acknowledge message — tells RabbitMQ it was handled successfully
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
     except Exception as e:
-        print(f"[Worker] Error processing vote: {e}")
-        # Negative ack — RabbitMQ will requeue and retry
+        print(f"[Worker] Error: {e}")
         ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
 
-def run_worker():
-    print("[Worker] Starting worker service...")
+def run_worker_loop():
+    """Runs in a background thread — keeps consuming from RabbitMQ."""
+    print("[Worker] Background thread started.")
     while True:
         try:
             params = pika.URLParameters(RABBITMQ_URL)
@@ -54,5 +54,15 @@ def run_worker():
             print(f"[Worker] Connection lost: {e}. Reconnecting in 5s...")
             time.sleep(5)
 
+# Health check endpoint — required so Render keeps the web service alive
+@app.route("/")
+def health():
+    return jsonify({"status": "worker running", "processed": processed_count}), 200
+
+# Start the worker loop in a background thread when the app boots
+worker_thread = threading.Thread(target=run_worker_loop, daemon=True)
+worker_thread.start()
+
 if __name__ == "__main__":
-    run_worker()
+    port = int(os.environ.get("PORT", 5001))
+    app.run(host="0.0.0.0", port=port)

@@ -85,12 +85,12 @@ CREATE TABLE votes (
 
 ### STEP 4 — Deploy the Worker to Render
 
-1. In Render, click **New → Background Worker**
+1. In Render, click **New → Web Service (same type as the API)**
 2. Connect the same GitHub repo, select the `worker/` folder as root
 3. Set these:
    - **Runtime:** Python 3
    - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `python worker.py`
+   - **Start Command:** `gunicorn worker:app`
 4. Add **Environment Variables:**
    - Key: `RABBITMQ_URL` | Value: *(your CloudAMQP AMQP URL)*
    - Key: `SUPABASE_URL` | Value: *(your Supabase Project URL)*
