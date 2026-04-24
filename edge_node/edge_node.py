@@ -5,7 +5,7 @@ import requests
 import os
 
 # Replace with your actual Render API URL after deployment
-API_URL = os.getenv("API_URL", "http://localhost:5000/vote")
+API_URL = os.getenv("API_URL", "https://api-ykgx.onrender.com/vote")
 NODE_ID = os.getenv("NODE_ID", f"node-{uuid.uuid4().hex[:6]}")
 
 vote_count = 0
@@ -52,4 +52,4 @@ def run_edge_node(duplicate=False):
 
 if __name__ == "__main__":
     # Set duplicate=True when doing fault injection testing (Part 5 Step 1)
-    run_edge_node(duplicate=False)
+    run_edge_node(duplicate=True)
