@@ -1,6 +1,7 @@
 # Distributed Voting System — CS323 Lab 2
 **Stack:** Render (API + Worker) · CloudAMQP RabbitMQ · Supabase  
 **Architecture:** `Edge Node → Flask API (Render) → RabbitMQ (CloudAMQP) → Worker (Render) → Supabase`
+![Architecture Diagram](voting_system_architecture.svg)
 
 ---
 
@@ -18,6 +19,9 @@ GCP requires a billing account with a credit card. This stack replicates the **e
 ## System Overview
 
 This system simulates a distributed voting pipeline where multiple edge nodes independently generate votes and send them to a cloud API. The API publishes each vote as a message to RabbitMQ, which buffers them asynchronously. A worker service continuously consumes those messages and writes them to Supabase. The system was designed to remain functional even when individual components fail.
+
+**Live API Endpoint:** https://api-ykgx.onrender.com
+**Live Worker Endpoint:** https://worker-m5bb.onrender.com
 
 ---
 
@@ -212,4 +216,4 @@ Run the edge node for about 30 seconds. Each vote is intentionally sent twice to
 *(Write 1–2 paragraphs based on your actual experience. Consider: How did this compare to sequential programming you have done before? What did you find most interesting about edge computing — running scripts locally that feed into a cloud system? What questions do you still have about distributed systems?)*
 
 ### Member 5 — [Martinez, Thomas Gabriel D.]
-*(For me, the most challenging part of this laboratory activity was setting up the cloud services. Creating accounts and configuring Render, Supabase, and CloudAMQP each had their own steps and settings to get right, and it was not always clear what needed to be done in what order. Unlike writing code where you can test things immediately, setting up cloud infrastructure means waiting for deployments, checking environment variables, and troubleshooting across multiple dashboards at the same time. It took patience to get everything connected properly, and I gained a deeper appreciation for how much work goes into preparing the environment before a distributed system can even run. The most surprising moment for me during the activity was when I found out that the worker service had stopped consuming messages on its own, even before it was intentionally suspended. I expected failures to be obvious, like an error message or a crash, but instead the worker just quietly went idle while everything else kept running. The API was still accepting votes and CloudAMQP was still receiving them, but nothing was reaching Supabase. Seeing that happen made me realize that in distributed systems, components can fail in ways that are completely invisible if you are not actively monitoring them. Running my own edge node and watching my votes appear in Supabase under my node name was a satisfying moment that made the whole system feel real and connected, and it helped me understand how multiple independent sources can contribute to a shared cloud pipeline at the same time.)*
+*For me, the most challenging part of this laboratory activity was setting up the cloud services. Creating accounts and configuring Render, Supabase, and CloudAMQP each had their own steps and settings to get right, and it was not always clear what needed to be done in what order. Unlike writing code where you can test things immediately, setting up cloud infrastructure means waiting for deployments, checking environment variables, and troubleshooting across multiple dashboards at the same time. It took patience to get everything connected properly, and I gained a deeper appreciation for how much work goes into preparing the environment before a distributed system can even run. The most surprising moment for me during the activity was when I found out that the worker service had stopped consuming messages on its own, even before it was intentionally suspended. I expected failures to be obvious, like an error message or a crash, but instead the worker just quietly went idle while everything else kept running. The API was still accepting votes and CloudAMQP was still receiving them, but nothing was reaching Supabase. Seeing that happen made me realize that in distributed systems, components can fail in ways that are completely invisible if you are not actively monitoring them. Running my own edge node and watching my votes appear in Supabase under my node name was a satisfying moment that made the whole system feel real and connected, and it helped me understand how multiple independent sources can contribute to a shared cloud pipeline at the same time.*
