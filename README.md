@@ -200,20 +200,19 @@ Run the edge node for about 30 seconds. Each vote is intentionally sent twice to
 
 ## Individual Reflections
 
-### Member 1 — [Name]
+### Member 1 — [Bao, Roger Jr E.]
 *(Write 1–2 paragraphs based on your actual experience. Consider: What surprised you about how the system behaved? What was difficult to set up? What did you learn about distributed systems from watching the queue fill up during worker downtime? How was this different from a regular single-machine program?)*
 
-### Member 2 — [Name]
-*(Write 1–2 paragraphs based on your actual experience. Consider: What did you observe when running your own edge node? Did your votes appear in Supabase? What does idempotency mean to you now that you saw it in action? What challenges did you face during setup or deployment?)*
+### Member 2 — [Lagayada, Bea A.]
+*At first, the lab seemed like a straightforward “connect everything and it works” task, but it quickly became much more meaningful once we started testing failures. The biggest realization came when we shut down the worker—nothing crashed. Votes kept coming in, the API still responded normally, and the system just queued everything in the background. Watching the backlog grow without breaking anything, then seeing it automatically recover once the worker was back, made me understand how distributed systems are designed for resilience, not perfection.
 
-### Member 3 — [Name]
+We also learned the hard way about duplication and latency. When we sent duplicate votes without proper handling, our database filled with repeated entries, which forced us to implement idempotency correctly. After fixing it, the system handled duplicates cleanly, which made the concept finally click. At the same time, delays in processing showed that timing in distributed systems can be unpredictable. Overall, the experience taught me that building reliable systems isn’t just about making things work—it’s about making sure they keep working even when things go wrong.*
+
+### Member 3 — [Laplap, Mariel]
 *(Write 1–2 paragraphs based on your actual experience. Consider: How did the fault injection tests change your understanding of distributed systems? What was interesting about watching the worker recover automatically? What trade-offs did you notice between simplicity and reliability?)*
 
-### Member 4 — [Name]
+### Member 4 — [Ruelo, Cydney]
 *(Write 1–2 paragraphs based on your actual experience. Consider: What did the RabbitMQ dashboard show you during the failure test? How did eventual consistency show up in this system? What would you do differently if building this for a real election?)*
-
-### Member 5 — [Name]
-*(Write 1–2 paragraphs based on your actual experience. Consider: How did this compare to sequential programming you have done before? What did you find most interesting about edge computing — running scripts locally that feed into a cloud system? What questions do you still have about distributed systems?)*
 
 ### Member 5 — [Martinez, Thomas Gabriel D.]
 *For me, the most challenging part of this laboratory activity was setting up the cloud services. Creating accounts and configuring Render, Supabase, and CloudAMQP each had their own steps and settings to get right, and it was not always clear what needed to be done in what order. Unlike writing code where you can test things immediately, setting up cloud infrastructure means waiting for deployments, checking environment variables, and troubleshooting across multiple dashboards at the same time. It took patience to get everything connected properly, and I gained a deeper appreciation for how much work goes into preparing the environment before a distributed system can even run. The most surprising moment for me during the activity was when I found out that the worker service had stopped consuming messages on its own, even before it was intentionally suspended. I expected failures to be obvious, like an error message or a crash, but instead the worker just quietly went idle while everything else kept running. The API was still accepting votes and CloudAMQP was still receiving them, but nothing was reaching Supabase. Seeing that happen made me realize that in distributed systems, components can fail in ways that are completely invisible if you are not actively monitoring them. Running my own edge node and watching my votes appear in Supabase under my node name was a satisfying moment that made the whole system feel real and connected, and it helped me understand how multiple independent sources can contribute to a shared cloud pipeline at the same time.*
